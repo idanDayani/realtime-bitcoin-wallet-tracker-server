@@ -15,6 +15,7 @@ export function startWebSocketServer(port: number = 8080) {
 export function broadcastWalletEvent(data: any) {
     const message = JSON.stringify(data);
     for (const client of clients) {
+        console.log("Broadcasting wallet event via WebSocket", { message });
         if (client.readyState === WebSocket.OPEN) {
             client.send(message);
         }

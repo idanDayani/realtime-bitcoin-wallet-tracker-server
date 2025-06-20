@@ -10,11 +10,13 @@ const producer = kafka.producer();
 const TOPIC = "wallet-events";
 
 export async function connectProducer() {
+    console.log("Connecting to Kafka");
     await producer.connect();
 }
 
 export async function sendWalletEvent(walletData: WalletData) {
     try {
+        console.log("Sending wallet event to Kafka", { walletData });
         await producer.send({
             topic: TOPIC,
             messages: [{ value: JSON.stringify(walletData) }],

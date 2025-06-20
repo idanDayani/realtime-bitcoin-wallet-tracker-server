@@ -5,6 +5,7 @@ import { connectProducer, sendWalletEvent } from "./producer";
 import { startConsumer } from "./consumer";
 import { startWebSocketServer, broadcastWalletEvent } from "./websocket";
 import { getWalletData } from "./getWalletData";
+import { RateLimitError } from "./rateLimitError";
 
 async function main() {
     await connectProducer();
@@ -15,10 +16,17 @@ async function main() {
     });
 
     setInterval(async () => {
-        const walletData = await getWalletData();
-        console.log("walletData", walletData);
-        await sendWalletEvent(walletData);
-    }, 20000);
+        try {
+            const walletData = await getWalletData();
+            await sendWalletEvent(walletData);
+        } catch (error) {
+            if (error instanceof RateLimitError) {
+                broadcastWalletEvent({ isRateLimitError: true });
+            } else {
+                console.error("Error getting wallet data:", error);
+            }
+        }
+    }, 5000);
 }
 
 main();

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { RateLimitError } from "./rateLimitError";
 
 const BLOCKCYPHER_BASE_URL = "https://api.blockcypher.com/v1/btc/main/addrs";
 const BLOCKCYPHER_TOKEN = process.env.BLOCKCYPHER_TOKEN;
@@ -10,6 +11,9 @@ export async function fetchWalletBTCBalance(): Promise<number> {
         const { balance: balanceInSatoshis } = (await axios.get(url)).data;
         return balanceInSatoshis / 100000000;
     } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 429) {
+            throw new RateLimitError();
+        }
         console.error("Error fetching wallet data:", error);
         throw error;
     }

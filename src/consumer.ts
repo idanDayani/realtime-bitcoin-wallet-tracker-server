@@ -14,6 +14,7 @@ export async function startConsumer(onMessage: (data: any) => void) {
 
     await consumer.run({
         eachMessage: async ({ message }) => {
+            console.log("Received message from Kafka");
             if (message.value) {
                 const data = JSON.parse(message.value.toString());
                 onMessage(data);
