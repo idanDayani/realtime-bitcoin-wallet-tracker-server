@@ -18,7 +18,7 @@ async function main() {
         const walletData = await getWalletData();
         console.log("walletData", walletData);
         await sendWalletEvent(walletData);
-    }, 5000);
+    }, 20000);
 }
 
 main();

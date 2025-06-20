@@ -8,10 +8,10 @@ export interface WalletData {
 }
 
 export async function getWalletData() {
-    // const [balanceBTC, btcUsdPrice] = await Promise.all([fetchWalletBTCBalance(), fetchBTCUSDPrice()]);
+    const [balanceBTC, btcUsdPrice] = await Promise.all([fetchWalletBTCBalance(), fetchBTCUSDPrice()]);
     return {
-        balanceBTC: Math.random() * 100,
-        btcUsdPrice: Math.random() * 100,
-        balanceUSD: Math.random() * 100,
+        balanceBTC,
+        btcUsdPrice,
+        balanceUSD: balanceBTC * btcUsdPrice,
     };
 }
