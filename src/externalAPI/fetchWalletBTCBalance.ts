@@ -1,5 +1,5 @@
 import axios from "axios";
-import { RateLimitError } from "./rateLimitError";
+import { RateLimitError } from "../rateLimitError";
 
 const BLOCKCYPHER_BASE_URL = "https://api.blockcypher.com/v1/btc/main/addrs";
 const BLOCKCYPHER_TOKEN = process.env.BLOCKCYPHER_TOKEN;

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { RateLimitError } from "./rateLimitError";
+import { RateLimitError } from "../rateLimitError";
 
 export async function fetchBTCUSDPrice(): Promise<number> {
     try {

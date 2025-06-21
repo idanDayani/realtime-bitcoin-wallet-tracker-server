@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { connectProducer, sendWalletEvent, disconnectProducer } from "./producer";
+import { connectProducer } from "./kafka/producer";
 import { startWebSocketServer, broadcastWalletEvent } from "./websocket";
-import { getWalletData } from "./getWalletData";
-import { RateLimitError } from "./rateLimitError";
-import { startWalletTrackerConsumer, disconnectWalletTrackerConsumer } from "./kafka/walletTrackerConsumer";
-import { startLogConsumer, disconnectLogConsumer } from "./kafka/logConsumer";
+import { startWalletTrackerConsumer } from "./kafka/walletTrackerConsumer";
+import { startLogConsumer } from "./kafka/logConsumer";
+import { shutdown } from "./shutdown";
+import { startWalletDataPolling } from "./startWalletDataPolling";
 
 async function main() {
     const topic = "wallet-events";
@@ -18,29 +18,11 @@ async function main() {
     startLogConsumer(topic);
 
     const interval = setInterval(async () => {
-        try {
-            const walletData = await getWalletData();
-            await sendWalletEvent(topic, walletData);
-        } catch (error) {
-            if (error instanceof RateLimitError) {
-                broadcastWalletEvent({ isRateLimitError: true });
-            } else {
-                console.error("Error getting wallet data:", error);
-            }
-        }
+        await startWalletDataPolling(topic);
     }, 10000);
 
-    const gracefulShutdown = async () => {
-        console.log("Shutting down gracefully...");
-        clearInterval(interval);
-        await disconnectProducer();
-        await disconnectWalletTrackerConsumer();
-        await disconnectLogConsumer();
-        process.exit(0);
-    };
-
-    process.on("SIGINT", gracefulShutdown);
-    process.on("SIGTERM", gracefulShutdown);
+    process.on("SIGINT", () => shutdown(interval));
+    process.on("SIGTERM", () => shutdown(interval));
 }
 
 main().catch(console.error);

@@ -1,5 +1,5 @@
-import { fetchBTCUSDPrice } from "./fetchBTCUSDPrice";
-import { fetchWalletBTCBalance } from "./fetchWalletBTCBalance";
+import { fetchBTCUSDPrice } from "./externalAPI/fetchBTCUSDPrice";
+import { fetchWalletBTCBalance } from "./externalAPI/fetchWalletBTCBalance";
 
 export interface WalletData {
     balanceBTC: number;
