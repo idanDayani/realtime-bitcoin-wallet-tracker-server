@@ -20,7 +20,7 @@ export async function startLogConsumer(topic: string) {
         eachMessage: async ({ message }) => {
             if (message.value) {
                 const walletData = JSON.parse(message.value.toString());
-                console.log("Received message from Kafka log-service consumer", { walletData });
+                console.log("Log-service consumer received message", { walletData });
                 const logEntry = {
                     timestamp: new Date().toISOString(),
                     ...walletData,

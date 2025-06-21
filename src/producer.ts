@@ -8,13 +8,14 @@ const kafka = new Kafka({
 });
 
 const producer = kafka.producer();
-const TOPIC = "wallet-events";
 
 export async function connectProducer() {
+    console.log("Connecting to Kafka producer...");
     await producer.connect();
 }
 
 export async function sendWalletEvent(topic: string, walletData: WalletData) {
+    console.log("Sending event to Kafka");
     try {
         await producer.send({
             topic: topic,
@@ -38,5 +39,6 @@ export async function sendRateLimitEvent(topic: string) {
 }
 
 export async function disconnectProducer() {
+    console.log("Disconnecting Kafka producer...");
     await producer.disconnect();
 }

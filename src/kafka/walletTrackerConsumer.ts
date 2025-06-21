@@ -17,7 +17,7 @@ export async function startWalletTrackerConsumer(topic: string, onMessage: (data
         eachMessage: async ({ message }) => {
             if (message.value) {
                 const data = JSON.parse(message.value.toString());
-                console.log("Received message from Kafka wallet-tracker consumer", { data });
+                console.log("Wallet-tracker consumer received message", { data });
                 onMessage(data);
             }
         },
