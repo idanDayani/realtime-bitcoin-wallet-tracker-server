@@ -1,5 +1,5 @@
 import { Kafka, logLevel } from "kafkajs";
-import { WalletData } from "./getWalletData";
+import { WalletData } from "../getWalletData";
 
 const kafka = new Kafka({
     clientId: "wallet-tracker-producer",
@@ -8,16 +8,16 @@ const kafka = new Kafka({
 });
 
 const producer = kafka.producer();
-const TOPIC = "wallet-events";
 
 export async function connectProducer() {
+    console.log("Connecting to Kafka producer...");
     await producer.connect();
 }
 
 export async function sendWalletEvent(topic: string, walletData: WalletData) {
     try {
         await producer.send({
-            topic: topic,
+            topic,
             messages: [{ value: JSON.stringify(walletData) }],
         });
     } catch (error) {
@@ -25,18 +25,26 @@ export async function sendWalletEvent(topic: string, walletData: WalletData) {
     }
 }
 
-export async function sendRateLimitEvent(topic: string) {
+export async function sendWalletEventsBatch(topic: string, walletDataArray: WalletData[]) {
+    if (walletDataArray.length === 0) {
+        return;
+    }
+
     try {
-        const rateLimitMessage = { isRateLimitError: true };
+        const messages = walletDataArray.map(walletData => ({
+            value: JSON.stringify(walletData),
+        }));
+
         await producer.send({
-            topic: topic,
-            messages: [{ value: JSON.stringify(rateLimitMessage) }],
+            topic,
+            messages,
         });
     } catch (error) {
-        console.error("Error sending rate limit event:", error);
+        console.error("Error sending wallet event batch:", error);
     }
 }
 
 export async function disconnectProducer() {
+    console.log("Disconnecting Kafka producer...");
     await producer.disconnect();
 }
