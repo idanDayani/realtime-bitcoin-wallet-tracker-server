@@ -78,4 +78,4 @@ Make sure you have the following installed:
 
 Here is a demonstration of the project in action:
 
-![Bitcoin Wallet Tracker Demo](demo.gif)
+![Bitcoin Wallet Tracker Demo](https://github.com/idanDayani/realtime-bitcoin-wallet-tracker-server/blob/main/demo.gif?raw=true)
