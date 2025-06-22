@@ -14,13 +14,31 @@ This project is a real-time Bitcoin wallet tracker. It fetches wallet data from 
 
 ```mermaid
 graph TD
-    A[BlockCypher API] -->|Fetch wallet data| B(Node.js Backend)
-    B -->|Send wallet data| C(Kafka Broker)
-    C -->|New wallet event| D(Kafka Consumer in Backend)
-    D -->|Broadcast event| E(WebSocket Server)
-    E -->|Push real-time updates| F(Web Client 1)
-    E -->|Push real-time updates| G(Web Client 2)
-    E -->|Push real-time updates| H(Web Client N)
+    subgraph "Data Sources"
+        A[BlockCypher API]
+        P[BTC/USD Price API]
+    end
+
+    B(Node.js Backend)
+
+    A -- "Fetch wallet balance" --> B
+    P -- "Fetch BTC/USD price" --> B
+
+    B -- "Produce message" --> K[Kafka Broker]
+
+    subgraph "Kafka Consumers (in Backend)"
+        K -->|wallet-updates topic| WC(WalletTrackerConsumer)
+        K -->|log-events topic| LC(LogConsumer)
+    end
+
+    WC -- "Broadcast event" --> WS(WebSocket Server)
+    LC -- "Write log entry" --> LF(events.log)
+
+    subgraph "Web Clients"
+        WS -- "Push real-time updates" --> C1(Web Client 1)
+        WS -- "Push real-time updates" --> C2(Web Client 2)
+        WS -- "Push real-time updates" --> CN(Web Client N)
+    end
 ```
 
 ## Getting Started
@@ -56,10 +74,8 @@ Make sure you have the following installed:
     npx ts-node src/index.ts
     ```
 
-## Video Demonstration
+## Demonstration
 
-Here is a video demonstrating the project in action:
+Here is a demonstration of the project in action:
 
-![Bitcoin Wallet Tracker Demo](bitcoinWalltTrackerVideo.mov)
-
-**Note:** For the video to display, you'll need to make sure the `bitcoinWalltTrackerVideo.mov` file is in the root of the project directory. GitHub doesn't directly embed `.mov` files in READMEs. You might need to convert it to a GIF or upload it to a video service and link to it.
+![Bitcoin Wallet Tracker Demo](demo.gif)
