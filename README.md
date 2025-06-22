@@ -82,6 +82,5 @@ Make sure you have the following installed:
 
 ## Demonstration
 
-Here is a demonstration of the project in action:
-
+Here is a demonstration of the project in action(You must have the [realtime-bitcoin-wallet-tracker-client](https://github.com/idanDayani/realtime-bitcoin-wallet-tracker-client) repo for it):
 ![Bitcoin Wallet Tracker Demo](https://github.com/idanDayani/realtime-bitcoin-wallet-tracker-server/blob/main/%20demo.gif)
