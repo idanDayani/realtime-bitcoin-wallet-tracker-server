@@ -70,8 +70,14 @@ Make sure you have the following installed:
     ```
 
 4.  In a new terminal, run the application:
+
     ```sh
     npx ts-node src/index.ts
+    ```
+
+5.  Optionally set environment variables in .env:
+    ```sh
+    BLOCKCYPHER_TOKEN (https://accounts.blockcypher.com/tokens)
     ```
 
 ## Demonstration
