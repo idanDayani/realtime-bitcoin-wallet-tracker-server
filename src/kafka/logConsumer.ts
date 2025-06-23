@@ -17,20 +17,29 @@ export async function startLogConsumer(topic: string) {
     await consumer.subscribe({ topic, fromBeginning: true });
 
     await consumer.run({
-        eachMessage: async ({ message }) => {
-            if (message.value) {
-                const walletData = JSON.parse(message.value.toString());
-                console.log("Log-service consumer received message", { walletData });
-                const logEntry = {
-                    timestamp: new Date().toISOString(),
-                    ...walletData,
-                };
+        eachBatch: async ({ batch }) => {
+            console.log(`Log-service consumer received a batch of ${batch.messages.length} messages.`);
+            const logEntries = batch.messages
+                .map(message => {
+                    if (!message.value) {
+                        return null;
+                    }
+                    const walletData = JSON.parse(message.value.toString());
+                    return JSON.stringify({
+                        timestamp: new Date().toISOString(),
+                        ...walletData,
+                    });
+                })
+                .filter((entry): entry is string => entry !== null);
 
-                try {
-                    await appendFile(LOG_FILE, JSON.stringify(logEntry) + "\n");
-                } catch (err) {
-                    console.error("Failed to write to log file:", err);
-                }
+            if (logEntries.length === 0) {
+                return;
+            }
+
+            try {
+                await appendFile(LOG_FILE, logEntries.join("\n") + "\n");
+            } catch (err) {
+                console.error("Failed to write to log file:", err);
             }
         },
     });

@@ -7,14 +7,13 @@ import { startWalletTrackerConsumer } from "./kafka/walletTrackerConsumer";
 import { startLogConsumer } from "./kafka/logConsumer";
 import { shutdown } from "./shutdown";
 import { startWalletDataPolling } from "./startWalletDataPolling";
+import { BinanceWalletAddress } from "./externalAPI/fetchWalletsBTCBalances";
 
 async function main() {
     const topic = "wallet-events";
     await connectProducer();
     startWebSocketServer(8080);
-    startWalletTrackerConsumer(topic, data => {
-        broadcastWalletEvent(data);
-    });
+    startWalletTrackerConsumer({ topic, walletAddressToTrack: BinanceWalletAddress, onMessage: data => broadcastWalletEvent(data) });
     startLogConsumer(topic);
 
     const interval = setInterval(async () => {

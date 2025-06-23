@@ -1,17 +1,27 @@
 import { fetchBTCUSDPrice } from "./externalAPI/fetchBTCUSDPrice";
-import { fetchWalletBTCBalance } from "./externalAPI/fetchWalletBTCBalance";
+import { BinanceWalletAddress, fetchWalletsBTCBalances, RobinhoodWalletAddress } from "./externalAPI/fetchWalletsBTCBalances";
 
 export interface WalletData {
+    walletAddress: string;
     balanceBTC: number;
     btcUsdPrice: number;
     balanceUSD: number;
 }
 
-export async function getWalletData() {
-    const [balanceBTC, btcUsdPrice] = await Promise.all([fetchWalletBTCBalance(), fetchBTCUSDPrice()]);
-    return {
-        balanceBTC,
-        btcUsdPrice,
-        balanceUSD: balanceBTC * btcUsdPrice,
-    };
+export async function getWalletsData() {
+    const [{ binanceWalletBalance, robinhoodWalletBalance }, btcUsdPrice] = await Promise.all([fetchWalletsBTCBalances(), fetchBTCUSDPrice()]);
+    return [
+        {
+            walletAddress: BinanceWalletAddress,
+            balanceBTC: binanceWalletBalance,
+            btcUsdPrice,
+            balanceUSD: binanceWalletBalance * btcUsdPrice,
+        },
+        {
+            walletAddress: RobinhoodWalletAddress,
+            balanceBTC: robinhoodWalletBalance,
+            btcUsdPrice,
+            balanceUSD: robinhoodWalletBalance * btcUsdPrice,
+        },
+    ];
 }

@@ -1,12 +1,12 @@
-import { getWalletData } from "./getWalletData";
+import { getWalletsData } from "./getWalletData";
 import { RateLimitError } from "./rateLimitError";
-import { sendWalletEvent } from "./kafka/producer";
+import { sendWalletEventsBatch } from "./kafka/producer";
 import { broadcastWalletEvent } from "./websocket";
 
 export async function startWalletDataPolling(topic: string) {
     try {
-        const walletData = await getWalletData();
-        await sendWalletEvent(topic, walletData);
+        const walletsData = await getWalletsData();
+        await sendWalletEventsBatch(topic, walletsData);
     } catch (error) {
         if (error instanceof RateLimitError) {
             broadcastWalletEvent({ isRateLimitError: true });

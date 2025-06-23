@@ -14,6 +14,7 @@ export async function connectProducer() {
     await producer.connect();
 }
 
+// This function not in use, but keeping it here for future reference
 export async function sendWalletEvent(topic: string, walletData: WalletData) {
     try {
         await producer.send({

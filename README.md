@@ -21,18 +21,18 @@ graph TD
 
     B(Node.js Backend)
 
-    A -- "Fetch wallet balance" --> B
+    A -- "Fetch wallet balances (batch)" --> B
     P -- "Fetch BTC/USD price" --> B
 
-    B -- "Produce message" --> K[Kafka Broker]
+    B -- "Produce batch of messages" --> K[Kafka Broker]
 
     subgraph "Kafka Consumers (in Backend)"
         K -->|wallet-updates topic| WC(WalletTrackerConsumer)
         K -->|log-events topic| LC(LogConsumer)
     end
 
-    WC -- "Broadcast event" --> WS(WebSocket Server)
-    LC -- "Write log entry" --> LF(events.log)
+    WC -- "Broadcast event (one by one)" --> WS(WebSocket Server)
+    LC -- "Write log entries (in batches)" --> LF(events.log)
 
     subgraph "Web Clients"
         WS -- "Push real-time updates" --> C1(Web Client 1)

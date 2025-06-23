@@ -8,7 +8,8 @@ const kafka = new Kafka({
 
 const consumer = kafka.consumer({ groupId: "wallet-tracker-group" });
 
-export async function startWalletTrackerConsumer(topic: string, onMessage: (data: any) => void) {
+export async function startWalletTrackerConsumer(params: { topic: string; walletAddressToTrack: string; onMessage: (data: any) => void }) {
+    const { topic, walletAddressToTrack, onMessage } = params;
     console.log("Starting wallet-tracker consumer...");
     await consumer.connect();
     await consumer.subscribe({ topic, fromBeginning: true });
@@ -17,8 +18,10 @@ export async function startWalletTrackerConsumer(topic: string, onMessage: (data
         eachMessage: async ({ message }) => {
             if (message.value) {
                 const data = JSON.parse(message.value.toString());
-                console.log("Wallet-tracker consumer received message", { data });
-                onMessage(data);
+                if (data.walletAddress === walletAddressToTrack) {
+                    console.log("Wallet-tracker consumer received message", { data });
+                    onMessage(data);
+                }
             }
         },
     });
